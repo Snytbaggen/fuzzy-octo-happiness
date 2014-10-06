@@ -24,10 +24,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import songs.FileNames;
 import songs.Notes;
 import songs.Song;
 import songs.SongList;
-import songs.SongNames;
 
 
 public class MainActivity extends ListActivity implements SensorEventListener{
@@ -71,6 +71,7 @@ public class MainActivity extends ListActivity implements SensorEventListener{
         loadSongFiles();
         songList.loadList(APP_DATA_DIRECTORY + "/songlist.lkss");
 
+        //Create list
         final SongListAdapter adapter = new SongListAdapter(this, R.layout.activity_main, songList.getList());
 
         ListView listView = (ListView) findViewById(android.R.id.list);
@@ -93,26 +94,31 @@ public class MainActivity extends ListActivity implements SensorEventListener{
         return false;
     }
 
-    public void loadSongFiles(){
+    //Checks that all files exists in APP_DATA_DIRECTORY and if not copies them there
+    private void loadSongFiles(){
+        //Get list of all assets, most of them files
         AssetManager assetManager = getAssets();
-        SongNames songNames = new SongNames();
+        FileNames fileNames = new FileNames();
         String[] assetFilesNames = null;
         try{
-           assetFilesNames = assetManager.list("");
+           assetFilesNames = assetManager.list(""); //Get all the file names
         }catch (IOException e){
             Log.e("tag", "Failed to get asset file list.", e);
         }
 
         File filesDir = new File(APP_DATA_DIRECTORY);
         if (!filesDir.exists())
-            filesDir.mkdir();
+            filesDir.mkdir(); //Create dir if it doesn't exist
 
         File[] existingFiles = filesDir.listFiles();
         String filename;
+        //The array existingFiles will have more file than ours, but there's 109
+        //of our files in the assets folder and they come first in the array,
+        //so we use this to loop through the files we need
         for (int i=0; i<109; i++){
-            filename = songNames.getNameFromId(Integer.parseInt(assetFilesNames[i]));
+            filename = fileNames.getNameFromId(Integer.parseInt(assetFilesNames[i])); //Get name associated with file
 
-            if (!fileExists(existingFiles, filename)){
+            if (!fileExists(existingFiles, filename)){ //If it doesn't exists we copy the file and rename it to the proper name
                 InputStream in;
                 OutputStream out ;
                 try{

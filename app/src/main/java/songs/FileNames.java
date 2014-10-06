@@ -3,8 +3,8 @@ package songs;
 /**
  * Created by Daniel on 2014-09-20.
  */
-public class SongNames {
-    public SongNames(){}
+public class FileNames {
+    public FileNames(){}
 
     public String getNameFromId(int id){
         switch (id){
