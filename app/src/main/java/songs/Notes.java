@@ -29,7 +29,7 @@ public class Notes {
     public static final double G4  = 392;
     public static final double Ab4 = 415.30;
     public static final double A4  = 440;
-    public static final double Bb4 = 493.88;
+    public static final double Bb4 = 233.08*2;
     public static final double B4  = 493.88;
     public static final double C5  = 523.25;
     public static final double Db5 = 277.18*2; //I got lazy around here
@@ -41,7 +41,7 @@ public class Notes {
     public static final double G5  = 392*2;
     public static final double Ab5 = 415.30*2;
     public static final double A5  = 440*2;
-    public static final double Bb5 = 493.88*2;
+    public static final double Bb5 = 233.08*4;
     public static final double B5  = 493.88*2;
     public static final double C6  = 523.25*2;
 
@@ -69,7 +69,6 @@ public class Notes {
                 System.out.println("String to note parse error: " + str[i]);
                 break;
             }
-
         }
         return ret;
     }

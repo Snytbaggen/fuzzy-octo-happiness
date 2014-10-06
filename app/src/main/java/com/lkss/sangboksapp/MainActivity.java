@@ -69,7 +69,7 @@ public class MainActivity extends ListActivity implements SensorEventListener{
         lastUpdate = System.currentTimeMillis();
 
         loadSongFiles();
-        songList.loadList(APP_DATA_DIRECTORY + "/songlist");
+        songList.loadList(APP_DATA_DIRECTORY + "/songlist.lkss");
 
         final SongListAdapter adapter = new SongListAdapter(this, R.layout.activity_main, songList.getList());
 
@@ -185,17 +185,16 @@ public class MainActivity extends ListActivity implements SensorEventListener{
         }
     }
 
-
         public void clickListener(View v) {
             ListView list = getListView();
             final int position = list.getPositionForView(v);
             if (position != ListView.INVALID_POSITION) {
                 Song song = (Song) list.getItemAtPosition(position);
-                SongListAdapter adapter = (SongListAdapter)list.getAdapter();
-                if (v.getId() == R.id.list_song_info_icon)
-                    adapter.infoButtonClicked(getViewByPosition(position, list), song);
-                else
-                    adapter.noteButtonClicked(getViewByPosition(position, list), song);
+                player.playNotes(song.getStartTones(), NOTE_DURATION);
+
+                /*To call a function in the adapter at this point use the following line:
+                     SongListAdapter adapter = (SongListAdapter)list.getAdapter();
+                 and then adapter.functionName()*/
             }
         }
 
@@ -219,7 +218,6 @@ public class MainActivity extends ListActivity implements SensorEventListener{
     public void openSongFile(Song song){
         f = new File(APP_DATA_DIRECTORY, song.getSongFile());
 
-        //android.R.layout.simple_expandable_list_item_2
         Intent target = new Intent(Intent.ACTION_VIEW);
 		target.setDataAndType(Uri.fromFile(f),"application/pdf");
         target.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
