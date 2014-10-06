@@ -1,6 +1,6 @@
 package com.lkss.sangboksapp;
 
-import android.app.Activity;
+import android.app.ListActivity;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.res.AssetManager;
@@ -17,7 +17,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -31,7 +30,7 @@ import songs.SongList;
 import songs.SongNames;
 
 
-public class MainActivity extends Activity implements SensorEventListener{
+public class MainActivity extends ListActivity implements SensorEventListener{
     private static final int SHAKE_THRESHOLD = 2000;
     private static final double NOTE_DURATION = 0.7;
     private static final double TUNE_FORK_DURATION = 5;
@@ -70,17 +69,11 @@ public class MainActivity extends Activity implements SensorEventListener{
         lastUpdate = System.currentTimeMillis();
 
         loadSongFiles();
-
-        //Read an example song
-        //f = new File("005 Entrésång.pdf");
-        //f = new File(this.getCacheDir(), "008 Studentsången.pdf");
-        //songList.addSong(new Song(0,"Entrésång",5,"005 Entrésång.pdf",new double[]{Notes.C5, Notes.G4, Notes.E4, Notes.C4}));
-        //songList.save(Environment.getExternalStorageDirectory().getAbsolutePath()+"/songlist");
         songList.loadList(APP_DATA_DIRECTORY + "/songlist");
 
         final SongListAdapter adapter = new SongListAdapter(this, R.layout.activity_main, songList.getList());
 
-        ListView listView = (ListView) findViewById(R.id.song_list_view);
+        ListView listView = (ListView) findViewById(android.R.id.list);
         listView.setAdapter(adapter);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -192,9 +185,35 @@ public class MainActivity extends Activity implements SensorEventListener{
         }
     }
 
+
+        public void clickListener(View v) {
+            ListView list = getListView();
+            final int position = list.getPositionForView(v);
+            if (position != ListView.INVALID_POSITION) {
+                Song song = (Song) list.getItemAtPosition(position);
+                SongListAdapter adapter = (SongListAdapter)list.getAdapter();
+                if (v.getId() == R.id.list_song_info_icon)
+                    adapter.infoButtonClicked(getViewByPosition(position, list), song);
+                else
+                    adapter.noteButtonClicked(getViewByPosition(position, list), song);
+            }
+        }
+
+
+    public View getViewByPosition(int pos, ListView listView) {
+        final int firstListItemPosition = listView.getFirstVisiblePosition();
+        final int lastListItemPosition = firstListItemPosition + listView.getChildCount() - 1;
+
+        if (pos < firstListItemPosition || pos > lastListItemPosition ) {
+            return listView.getAdapter().getView(pos, null, listView);
+        } else {
+            final int childIndex = pos - firstListItemPosition;
+            return listView.getChildAt(childIndex);
+        }
+    }
+
     @Override
     public void onAccuracyChanged(Sensor sensor, int i) {
-
     }
 
     public void openSongFile(Song song){

@@ -2,61 +2,65 @@
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="?android:attr/listPreferredItemHeight">
-
-    <TextView
-        android:id="@+id/list_page_nr"
-        android:layout_width="35dp"
-        android:layout_height="match_parent"
-        android:textSize="18sp"
-        android:gravity="center"
-        android:layout_centerInParent="true"
-        android:layout_marginLeft="5dp"
-        android:layout_alignParentLeft="true"
-        android:text="000"
-        />
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/list_page_nr"
-        android:layout_toLeftOf="@+id/song_info_icon"
-        android:orientation="vertical">
-        <TextView
-            android:id="@+id/list_title_text"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:text="Till Stockholm for Heppeneppetepp"
-            android:layout_marginLeft="7dp"
-            android:layout_marginTop="5dp"
-            android:singleLine="true"
-            android:textSize="20sp"/>
+    android:layout_height="wrap_content">
 
         <TextView
-            android:id="@+id/list_subtitle_text"
+            android:id="@+id/list_page_nr"
             android:layout_width="wrap_content"
+            android:layout_height="60dp"
+            android:textSize="18sp"
+            android:gravity="center"
+            android:layout_marginLeft="5dp"
+            android:text="000"/>
+
+        <LinearLayout
+            android:id="@+id/list_information"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_toRightOf="@id/list_page_nr"
+            android:layout_toLeftOf="@+id/list_song_info_icon"
+            android:layout_weight="100"
             android:layout_marginLeft="7dp"
-            android:layout_marginBottom="8dp"
-            android:text="Subtitle Here"/>
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/list_title_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Till Stockholm for Heppeneppetepp"
+                android:layout_marginTop="1dp"
+                android:singleLine="true"
+                android:textSize="18sp"
+                android:textStyle="bold"/>
 
-    </LinearLayout>
+            <TextView
+                android:id="@+id/list_subtitle_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="1dp"
+                android:layout_marginTop="-1dp"
+                android:singleLine="true"
+                android:text="Undertitel"/>
 
-    <ImageView
-        android:id="@id/song_info_icon"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:paddingRight="10dp"
-        android:paddingLeft="10dp"
-        android:layout_alignParentRight="true"
-        android:layout_centerInParent="true"
-        android:clickable="true"
-        android:src="@drawable/ic_action_about"/>
+            <TextView
+                android:id="@+id/list_start_tones"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="15sp"
+                android:layout_marginBottom="1dp"
+                android:singleLine="true"
+                android:text="Starttoner här"/>
+        </LinearLayout>
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_alignParentBottom="true"
-        android:layout_height="1px"
-        android:background="#000000"/>
+        <ImageView
+            android:id="@+id/list_song_info_icon"
+            android:layout_width="40dp"
+            android:layout_height="60dp"
+            android:layout_marginRight="15dp"
+            android:scaleType="fitCenter"
+            android:layout_marginLeft="5dp"
+            android:layout_alignParentRight="true"
+            android:clickable="true"
+            android:onClick="clickListener"
+            android:src="@drawable/ic_action_about_cropped"/>
 
 </RelativeLayout>
