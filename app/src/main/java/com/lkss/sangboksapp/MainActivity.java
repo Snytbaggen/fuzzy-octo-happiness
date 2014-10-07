@@ -1,22 +1,19 @@
 package com.lkss.sangboksapp;
 
-import android.app.ListActivity;
-import android.content.ActivityNotFoundException;
-import android.content.Intent;
+import android.app.ActionBar;
+import android.app.Activity;
+import android.app.FragmentTransaction;
 import android.content.res.AssetManager;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ListView;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -26,22 +23,24 @@ import java.io.OutputStream;
 
 import songs.FileNames;
 import songs.Notes;
-import songs.Song;
 import songs.SongList;
 
 
-public class MainActivity extends ListActivity implements SensorEventListener{
+public class MainActivity extends Activity implements SensorEventListener{
     private static final int SHAKE_THRESHOLD = 2000;
     private static final double NOTE_DURATION = 0.7;
     private static final double TUNE_FORK_DURATION = 5;
     private static final String APP_DATA_DIRECTORY = Environment.getExternalStorageDirectory().getAbsolutePath()+"/LKSS";
+
+    private SongListFragment fragmentNumerical, fragmentAlphabetical, currentFragment;
 
     private SensorManager sensorManager;
     private Sensor mSensor;
     private long lastUpdate;
     float last_x, last_y, last_z = 0;
     boolean isActive;
-    SongList songList = new SongList(APP_DATA_DIRECTORY);
+    SongList songListNumerical = new SongList(APP_DATA_DIRECTORY);
+    SongList songListAlphabetical = new SongList(APP_DATA_DIRECTORY);
     File f;
     SoundPlayer player = new SoundPlayer();
 
@@ -69,21 +68,45 @@ public class MainActivity extends ListActivity implements SensorEventListener{
         lastUpdate = System.currentTimeMillis();
 
         loadSongFiles();
-        songList.loadList(APP_DATA_DIRECTORY + "/songlist.lkss");
+        songListNumerical.loadList(APP_DATA_DIRECTORY + "/songlist.lkss");
+        songListAlphabetical.loadList(APP_DATA_DIRECTORY + "/songlist.lkss");
+        songListAlphabetical.sortAlphabetical();
 
-        //Create list
-        final SongListAdapter adapter = new SongListAdapter(this, R.layout.activity_main, songList.getList());
+        fragmentNumerical = new SongListFragment();
+        fragmentNumerical.setData(APP_DATA_DIRECTORY, songListNumerical, player, NOTE_DURATION);
 
-        ListView listView = (ListView) findViewById(android.R.id.list);
-        listView.setAdapter(adapter);
+        fragmentAlphabetical = new SongListFragment();
+        fragmentAlphabetical.setData(APP_DATA_DIRECTORY, songListAlphabetical, player, NOTE_DURATION);
 
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        final ActionBar actionBar = getActionBar();
+        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+        ActionBar.TabListener tabListener = new ActionBar.TabListener() {
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                final Song song = (Song) adapterView.getItemAtPosition(i);
-                openSongFile(song);
+            public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+                if (tab.getText().toString().equalsIgnoreCase("0-9")) {
+                    getFragmentManager().beginTransaction().replace(R.id.main_fragment_container, fragmentNumerical).commit();
+                    currentFragment = fragmentNumerical;
+                }
+                else {
+                    getFragmentManager().beginTransaction().replace(R.id.main_fragment_container, fragmentAlphabetical).commit();
+                    currentFragment = fragmentAlphabetical;
+                }
             }
-        });
+
+            @Override
+            public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+                //hide the given tab
+            }
+
+            @Override
+            public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+                //probably ignore this event
+            }
+        };
+        actionBar.addTab(actionBar.newTab().setText("0-9").setTabListener(tabListener));
+        actionBar.addTab(actionBar.newTab().setText("A-Z").setTabListener(tabListener));
+
+        //getFragmentManager().beginTransaction().add(R.id.main_fragment_container, fragmentNumerical).commit();
     }
 
     private  boolean fileExists(File[] files, String name){
@@ -192,46 +215,10 @@ public class MainActivity extends ListActivity implements SensorEventListener{
     }
 
         public void clickListener(View v) {
-            ListView list = getListView();
-            final int position = list.getPositionForView(v);
-            if (position != ListView.INVALID_POSITION) {
-                Song song = (Song) list.getItemAtPosition(position);
-                player.playNotes(song.getStartTones(), NOTE_DURATION);
-
-                /*To call a function in the adapter at this point use the following line:
-                     SongListAdapter adapter = (SongListAdapter)list.getAdapter();
-                 and then adapter.functionName()*/
-            }
+            currentFragment.clickListener(v);
         }
-
-
-    public View getViewByPosition(int pos, ListView listView) {
-        final int firstListItemPosition = listView.getFirstVisiblePosition();
-        final int lastListItemPosition = firstListItemPosition + listView.getChildCount() - 1;
-
-        if (pos < firstListItemPosition || pos > lastListItemPosition ) {
-            return listView.getAdapter().getView(pos, null, listView);
-        } else {
-            final int childIndex = pos - firstListItemPosition;
-            return listView.getChildAt(childIndex);
-        }
-    }
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int i) {
-    }
-
-    public void openSongFile(Song song){
-        f = new File(APP_DATA_DIRECTORY, song.getSongFile());
-
-        Intent target = new Intent(Intent.ACTION_VIEW);
-		target.setDataAndType(Uri.fromFile(f),"application/pdf");
-        target.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
-		try {
-		    startActivity(target);
-		} catch (ActivityNotFoundException e) {
-		    // Instruct the user to install a PDF reader here, or something
-		}
     }
 }

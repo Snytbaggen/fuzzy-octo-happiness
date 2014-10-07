@@ -10,6 +10,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.StreamCorruptedException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -80,5 +82,23 @@ public class SongList{
 
     public List<Song> getList(){
         return songList;
+    }
+
+    public void sortAlphabetical(){
+        Collections.sort(songList, new Comparator<Song>() {
+            @Override
+            public int compare(Song song, Song song2) {
+                return song.getName().compareTo(song2.getName());
+            }
+        });
+    }
+
+    public void sortNumerical(){
+        Collections.sort(songList, new Comparator<Song>() {
+            @Override
+            public int compare(Song song, Song song2) {
+                return Integer.compare(song.getPage(), song2.getId());
+            }
+        });
     }
 }
