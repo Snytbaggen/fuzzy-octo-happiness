@@ -106,8 +106,6 @@ public class MainActivity extends Activity implements SensorEventListener{
         };
         actionBar.addTab(actionBar.newTab().setText("0-9").setTabListener(tabListener));
         actionBar.addTab(actionBar.newTab().setText("A-Z").setTabListener(tabListener));
-
-        //getFragmentManager().beginTransaction().add(R.id.main_fragment_container, fragmentNumerical).commit();
     }
 
     private  boolean fileExists(File[] files, String name){
