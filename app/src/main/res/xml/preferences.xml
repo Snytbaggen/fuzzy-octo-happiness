@@ -16,16 +16,14 @@
             android:title="Tonlängd"
             android:summary="Ändra hur länge stämgaffeln ska spelas upp i sekunder (standard 5)"
             android:defaultValue="5"
-            android:max="15"
-            />
+            android:max="15"/>
 
         <com.lkss.sangboksapp.SeekBarPreference
             android:key="fork_hardness"
             android:title="Stämgaffelshårdhet"
             android:summary="Justera hur mycket kraft som krävs för att aktivera stämgaffeln (standard 2000)"
             android:defaultValue="2000"
-            android:max="5000"
-            />
+            android:max="5000"/>
 
     </PreferenceCategory>
     <PreferenceCategory
@@ -37,8 +35,18 @@
             android:title="Starttonslängd"
             android:summary="Ändra hur länge starttonerna ska spelas i tiondels sekunder (standard 7)"
             android:defaultValue="7"
-            android:max="50"
-            />
+            android:max="50"/>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="Om appen"
+        android:key="third_category">
+
+        <EditTextPreference
+            android:summary="Linköpings Studentsångares Stamsånger V1.0\nGrafisk design Philip Ekströmer\nProgrammering Daniel Häggmyr\nENDAST FÖR INTERNT BRUK"
+            android:selectable="false"
+            android:editable="false"/>
 
     </PreferenceCategory>
 </PreferenceScreen>
