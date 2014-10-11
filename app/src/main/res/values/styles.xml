@@ -3,6 +3,12 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="android:Theme.Holo">
         <!-- Customize your theme here. -->
+        <item name="android:actionBarTabTextStyle">@style/CustomTabWidgetText</item>
+    </style>
+    <style name="CustomTabWidgetText"
+        parent="@android:style/TextAppearance.Widget.TabWidget">
+        <item name="android:textSize">22sp</item>
+        <!--item name="android:textStyle">**strong text**</item-->
     </style>
 
 </resources>
