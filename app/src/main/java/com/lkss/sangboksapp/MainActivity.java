@@ -1,8 +1,9 @@
 package com.lkss.sangboksapp;
 
 import android.app.ActionBar;
-import android.app.Activity;
 import android.app.FragmentTransaction;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.AssetManager;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -10,11 +11,14 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.Environment;
+import android.preference.PreferenceManager;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -27,13 +31,14 @@ import songs.Notes;
 import songs.SongList;
 
 
-public class MainActivity extends Activity implements SensorEventListener{
-    private static final int SHAKE_THRESHOLD = 2000;
-    private static final double NOTE_DURATION = 0.7;
-    private static final double TUNE_FORK_DURATION = 5;
+public class MainActivity extends FragmentActivity implements SensorEventListener{
+    private boolean tune_fork_enabled = true;
+    private int tune_fork_hardness = 2000;
+    private double note_duration = 0.7;
+    private double tune_fork_duration = 5;
     private static final String APP_DATA_DIRECTORY = Environment.getExternalStorageDirectory().getAbsolutePath()+"/LKSS";
 
-    private SongListFragment fragmentNumerical, fragmentAlphabetical, currentFragment;
+    private SongListFragment currentFragment;
 
     private SensorManager sensorManager;
     private Sensor mSensor;
@@ -42,7 +47,6 @@ public class MainActivity extends Activity implements SensorEventListener{
     boolean isActive;
     SongList songListNumerical = new SongList(APP_DATA_DIRECTORY);
     SongList songListAlphabetical = new SongList(APP_DATA_DIRECTORY);
-    File f;
     SoundPlayer player = new SoundPlayer();
 
     @Override
@@ -57,10 +61,16 @@ public class MainActivity extends Activity implements SensorEventListener{
         isActive = false;
     }
 
+    ViewPager tab;
+    TabPagerAdapter tabAdapter;
+    ActionBar actionBar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //updateSettings();
 
         //Fetch sensors and set sensor listener
         sensorManager = (SensorManager) getSystemService(this.SENSOR_SERVICE);
@@ -68,42 +78,42 @@ public class MainActivity extends Activity implements SensorEventListener{
         sensorManager.registerListener(this, mSensor, sensorManager.SENSOR_DELAY_NORMAL);
         lastUpdate = System.currentTimeMillis();
 
+        //Set up lists
         loadSongFiles();
         songListNumerical.loadList(APP_DATA_DIRECTORY + "/songlist.lkss");
         songListAlphabetical.loadList(APP_DATA_DIRECTORY + "/songlist.lkss");
         songListAlphabetical.sortAlphabetical();
 
-        fragmentNumerical = new SongListFragment();
-        fragmentNumerical.setData(APP_DATA_DIRECTORY, songListNumerical, player, NOTE_DURATION);
-
-        fragmentAlphabetical = new SongListFragment();
-        fragmentAlphabetical.setData(APP_DATA_DIRECTORY, songListAlphabetical, player, NOTE_DURATION);
-
-        final ActionBar actionBar = getActionBar();
+        //Set up tabs
+        tabAdapter = new TabPagerAdapter(getSupportFragmentManager());
+        tabAdapter.setData(APP_DATA_DIRECTORY, songListAlphabetical, songListNumerical, player, note_duration);
+        tab = (ViewPager)findViewById(R.id.pager);
+        tab.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener(){
+            @Override
+            public void onPageSelected(int position){
+                actionBar = getActionBar();
+                actionBar.setSelectedNavigationItem(position);
+            }
+        });
+        tab.setAdapter(tabAdapter);
+        actionBar = getActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-        ActionBar.TabListener tabListener = new ActionBar.TabListener() {
+        ActionBar.TabListener tabListener = new ActionBar.TabListener(){
             @Override
-            public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-                if (tab.getText().toString().equalsIgnoreCase("0-9")) {
-                    getFragmentManager().beginTransaction().replace(R.id.main_fragment_container, fragmentNumerical).commit();
-                    currentFragment = fragmentNumerical;
-                }
-                else {
-                    getFragmentManager().beginTransaction().replace(R.id.main_fragment_container, fragmentAlphabetical).commit();
-                    currentFragment = fragmentAlphabetical;
-                }
+            public void onTabReselected(android.app.ActionBar.Tab t,
+                                        FragmentTransaction ft) {
+                // TODO Auto-generated method stub
             }
-
             @Override
-            public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-                //hide the given tab
+            public void onTabSelected(ActionBar.Tab t, FragmentTransaction ft) {
+                tab.setCurrentItem(t.getPosition());
+                currentFragment = (SongListFragment)tabAdapter.getItem(t.getPosition());
             }
-
             @Override
-            public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-                //probably ignore this event
-            }
-        };
+            public void onTabUnselected(android.app.ActionBar.Tab t,
+                                        FragmentTransaction ft) {
+                // TODO Auto-generated method stub
+            }};
         actionBar.addTab(actionBar.newTab().setText("0-9").setTabListener(tabListener));
         actionBar.addTab(actionBar.newTab().setText("A-Z").setTabListener(tabListener));
     }
@@ -167,6 +177,28 @@ public class MainActivity extends Activity implements SensorEventListener{
         }
     }
 
+    private void  updateSettings(){
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        tune_fork_duration = preferences.getInt("fork_duration", 5);
+        tune_fork_enabled = preferences.getBoolean("fork_enabled", true);
+        tune_fork_hardness = preferences.getInt("fork_hardness", 2000);
+
+        note_duration = (double)preferences.getInt("note_duration", 7)/10;
+        //Toast.makeText(this, ""+note_duration, Toast.LENGTH_SHORT).show();
+
+        if (tabAdapter != null){
+            tabAdapter.updateDuration(note_duration);
+            //tabAdapter.setData(APP_DATA_DIRECTORY, songListAlphabetical, songListNumerical, player, note_duration);
+            //currentFragment = (SongListFragment)tabAdapter.getItem(0);
+        }
+    }
+
+    @Override
+    public void onResume(){
+        updateSettings();
+        super.onResume();
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -182,14 +214,16 @@ public class MainActivity extends Activity implements SensorEventListener{
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (id == R.id.action_settings) {
-            return true;
+            Intent intent = new Intent();
+            intent.setClass(MainActivity.this, SetPreferenceActivity.class);
+            startActivityForResult(intent, 0);
         }
         return super.onOptionsItemSelected(item);
     }
 
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
-        if (isActive){
+        if (isActive && tune_fork_enabled){
             long curTime = System.currentTimeMillis();
             // only allow one update every 100ms.
             if ((curTime - lastUpdate) > 100) {
@@ -202,8 +236,8 @@ public class MainActivity extends Activity implements SensorEventListener{
 
                 float speed = Math.abs(x + y + z - last_x - last_y - last_z) / diffTime * 10000;
 
-                if (speed > SHAKE_THRESHOLD) {
-                    player.playNote(Notes.A4, TUNE_FORK_DURATION);
+                if (speed > tune_fork_hardness) {
+                    player.playNote(Notes.A4, tune_fork_duration);
                 }
 
                 last_x = x;

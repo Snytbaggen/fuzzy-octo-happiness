@@ -1,13 +1,13 @@
 package com.lkss.sangboksapp;
 
 import android.app.Activity;
-import android.app.ListFragment;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.v4.app.ListFragment;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -33,19 +33,22 @@ import songs.SongList;
 /**
  * Created by Daniel on 2014-09-20.
  */
-public class SongListFragment extends ListFragment{
+public class SongListFragment extends ListFragment {
     private String appDataDirectory;
     private SongList songList;
     private SoundPlayer player;
     private double note_duration;
     List<Song> songsSearched = new ArrayList<Song>();
 
-
     public void setData(String appDataDirectory, SongList songList, SoundPlayer player, double note_duration){
         this.appDataDirectory=appDataDirectory;
         this.songList=songList;
         this.player=player;
         this.note_duration=note_duration;
+    }
+
+    public void updateDuration(double duration){
+        note_duration = duration;
     }
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
@@ -75,8 +78,7 @@ public class SongListFragment extends ListFragment{
                     if (name.contains(search) || subtitle.contains(search)){
                         songsSearched.add(s);
                     }
-                }
-                listView.setAdapter(new SongListAdapter(getActivity(), R.layout.activity_main, songsSearched));
+                }listView.setAdapter(new SongListAdapter(getActivity(), R.layout.activity_main, songsSearched));
             }
 
             @Override

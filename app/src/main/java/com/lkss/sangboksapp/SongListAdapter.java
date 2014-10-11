@@ -57,8 +57,10 @@ public class SongListAdapter extends ArrayAdapter<Song>{
                     subtitle.setText(s.getSubtitle());
                     subtitle.setVisibility(View.VISIBLE);
                 }
-                else
+                else {
                     subtitle.setVisibility(View.GONE);
+                    name.setPadding(0,0,0,0);
+                }
             }
         }
 
