@@ -8,15 +8,20 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.logging.Handler;
@@ -33,6 +38,7 @@ public class SongListFragment extends ListFragment{
     private SongList songList;
     private SoundPlayer player;
     private double note_duration;
+    List<Song> songsSearched = new ArrayList<Song>();
 
 
     public void setData(String appDataDirectory, SongList songList, SoundPlayer player, double note_duration){
@@ -47,8 +53,37 @@ public class SongListFragment extends ListFragment{
 
         final SongListAdapter adapter = new SongListAdapter(getActivity(), R.layout.activity_main, songList.getList());
 
-        ListView listView = (ListView) v.findViewById(android.R.id.list);
+        final ListView listView = (ListView) v.findViewById(android.R.id.list);
         listView.setAdapter(adapter);
+
+        TextView searchField = (TextView) v.findViewById(R.id.list_search);
+        searchField.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+                songsSearched.clear();
+                String name, subtitle, search;
+                for (Song s : songList.getList()){
+                    name = s.getName().toLowerCase();
+                    subtitle = s.getSubtitle().toLowerCase();
+                    search = charSequence.toString().toLowerCase();
+
+                    if (name.contains(search) || subtitle.contains(search)){
+                        songsSearched.add(s);
+                    }
+                }
+                listView.setAdapter(new SongListAdapter(getActivity(), R.layout.activity_main, songsSearched));
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
 
         return v;
     }
@@ -72,30 +107,6 @@ public class SongListFragment extends ListFragment{
         if (position != ListView.INVALID_POSITION) {
             Song song = (Song) list.getItemAtPosition(position);
             player.playNotes(song.getStartTones(), note_duration, (ImageView)v, getActivity());
-            //final ImageView iv = (ImageView)v;
-            //final Activity a = getActivity();
-            //TimerTask timerTask = new TimerTask() {
-
-            //    @Override
-            //    public void run() {
-            //        a.runOnUiThread(new Runnable() {
-            //            @Override
-            //            public void run() {
-            //                iv.setImageDrawable(iv.getResources().getDrawable(R.drawable.gaffel));
-            //            }
-            //        });
-            //    }
-            //};
-
-            //iv.setImageDrawable(iv.getResources().getDrawable(R.drawable.gaffel_klang));
-            //Timer timer = new Timer();
-            //double d = song.getStartTones().length*note_duration*1000;
-            //long time = (long) d;
-            //timer.schedule(timerTask, time);
-
-                /*To call a function in the adapter at this point use the following line:
-                     SongListAdapter adapter = (SongListAdapter)list.getAdapter();
-                 and then adapter.functionName()*/
         }
     }
 
