@@ -1,8 +1,11 @@
 package com.lkss.sangboksapp;
 
+import android.app.Activity;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
+import android.view.View;
+import android.widget.ImageView;
 
 /**
  * Created by Daniel on 2014-09-18.
@@ -11,12 +14,21 @@ public class SoundPlayer {
     public SoundPlayer(){};
     Thread NotesThread;
 
-    public void playNotes(final double[] notes, final double length){
+    public void playNotes(final double[] notes, final double length, final ImageView v, final Activity a){
         //Most of the code in this function is taken from StackOverflow
         if (NotesThread == null || !NotesThread.isAlive()){
             NotesThread = new Thread(new Runnable() {
                 @Override
                 public void run() {
+                    if (v != null && a != null) {
+                        a.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                v.setImageDrawable(v.getResources().getDrawable(R.drawable.gaffel_klang));
+                            }
+                        });
+                    }
+
                     double duration = length;                // seconds
                     for (int n = 0; n < notes.length; n++) {
                         double freqOfTone = notes[n];           // hz
@@ -95,6 +107,15 @@ public class SoundPlayer {
                         if (audioTrack != null)
                             audioTrack.release();           // Track playNote done. Release track.
                     }
+                    if (a != null && v != null){
+                        a.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                v.setImageDrawable(v.getResources().getDrawable(R.drawable.gaffel));
+                            }
+
+                        });
+                    }
                 }
             });
             NotesThread.start();
@@ -103,6 +124,6 @@ public class SoundPlayer {
 
     public void playNote(final double hz, final double length) {
         double[] notes = {hz};
-        playNotes(notes, length);
+        playNotes(notes, length, null, null);
     }
 }

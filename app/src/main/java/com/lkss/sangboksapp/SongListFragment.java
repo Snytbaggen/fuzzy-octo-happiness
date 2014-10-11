@@ -1,7 +1,9 @@
 package com.lkss.sangboksapp;
 
+import android.app.Activity;
 import android.app.ListFragment;
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -10,10 +12,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import java.io.File;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.logging.Handler;
+import java.util.logging.LogRecord;
 
 import songs.Song;
 import songs.SongList;
@@ -64,7 +71,27 @@ public class SongListFragment extends ListFragment{
         final int position = list.getPositionForView(v);
         if (position != ListView.INVALID_POSITION) {
             Song song = (Song) list.getItemAtPosition(position);
-            player.playNotes(song.getStartTones(), note_duration);
+            player.playNotes(song.getStartTones(), note_duration, (ImageView)v, getActivity());
+            //final ImageView iv = (ImageView)v;
+            //final Activity a = getActivity();
+            //TimerTask timerTask = new TimerTask() {
+
+            //    @Override
+            //    public void run() {
+            //        a.runOnUiThread(new Runnable() {
+            //            @Override
+            //            public void run() {
+            //                iv.setImageDrawable(iv.getResources().getDrawable(R.drawable.gaffel));
+            //            }
+            //        });
+            //    }
+            //};
+
+            //iv.setImageDrawable(iv.getResources().getDrawable(R.drawable.gaffel_klang));
+            //Timer timer = new Timer();
+            //double d = song.getStartTones().length*note_duration*1000;
+            //long time = (long) d;
+            //timer.schedule(timerTask, time);
 
                 /*To call a function in the adapter at this point use the following line:
                      SongListAdapter adapter = (SongListAdapter)list.getAdapter();
