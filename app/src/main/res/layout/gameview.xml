@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:id="@+id/gamelayout">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <TextView
+            android:id="@+id/game_left"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clickable="true"
+
+            android:layout_weight="1"/>
+        <TextView
+            android:id="@+id/game_right"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clickable="true"
+            android:layout_weight="1"/>
+        </LinearLayout>
+
+    <TextView
+        android:id="@+id/game_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Hjälp Hasse hitta stämgaffeln!"
+        android:textSize="15sp"/>
+
+    <TextView
+        android:id="@+id/game_score"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/game_text"
+        android:text="Poäng: "
+        android:textSize="15sp"/>
+
+</RelativeLayout>

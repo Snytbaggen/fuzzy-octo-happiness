@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="forksensitivity">
+        <item>Hög</item>
+        <item>Mellan</item>
+        <item>Låg</item>
+    </string-array>
+
+    <string-array name="forksensitivitysvals">
+        <item>1000</item>
+        <item>2000</item>
+        <item>3000</item>
+    </string-array>
+
+    <string-array name="forklength">
+        <item>Kort</item>
+        <item>Mellan</item>
+        <item>Lång</item>
+    </string-array>
+
+    <string-array name="forklengthsvals">
+        <item>2</item>
+        <item>5</item>
+        <item>10</item>
+    </string-array>
+
+    <string-array name="tonelength">
+        <item>Kort</item>
+        <item>Mellan</item>
+        <item>Lång</item>
+    </string-array>
+
+    <string-array name="tonelengthvals">
+        <item>4</item>
+        <item>7</item>
+        <item>10</item>
+    </string-array>
+</resources>

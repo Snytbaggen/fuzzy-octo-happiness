@@ -44,7 +44,7 @@ public class MainActivity extends FragmentActivity implements SensorEventListene
     private Sensor mSensor;
     private long lastUpdate;
     float last_x, last_y, last_z = 0;
-    boolean isActive;
+    boolean isActive, pdfEnabled;
     SongList songListNumerical = new SongList(APP_DATA_DIRECTORY);
     SongList songListAlphabetical = new SongList(APP_DATA_DIRECTORY);
     SoundPlayer player = new SoundPlayer();
@@ -127,6 +127,12 @@ public class MainActivity extends FragmentActivity implements SensorEventListene
     }
 
     //Checks that all files exists in APP_DATA_DIRECTORY and if not copies them there
+    /********************************************************************
+    * IMPORTANT                                                         *
+    * Due to copyright issues this code has been repurposed to only     *
+    * load a single "songfile", the user will have to add the PDF-      *
+    * files manually to the memory card                                 *
+    **********************************************************************/
     private void loadSongFiles(){
         //Get list of all assets, most of them files
         AssetManager assetManager = getAssets();
@@ -142,7 +148,47 @@ public class MainActivity extends FragmentActivity implements SensorEventListene
         if (!filesDir.exists())
             filesDir.mkdir(); //Create dir if it doesn't exist
 
+        /*CODE BELOW IS FOR THE COPYRIGHT "FIX"*/
         File[] existingFiles = filesDir.listFiles();
+        String filename = fileNames.getNameFromId(109);
+        if (!fileExists(existingFiles, filename)){ //If it doesn't exists we copy the file and rename it to the proper name
+            InputStream in;
+            OutputStream out ;
+            try{
+                in = assetManager.open("109");
+                File outFile = new File(APP_DATA_DIRECTORY, filename);
+                out = new FileOutputStream(outFile);
+                copyFile(in, out);
+                in.close();
+                out.flush();
+                out.close();
+                Log.w("song", "Wrote song "+filename);
+            }catch (IOException e){
+                Log.e("tag", "Failed to copy asset file: "+filename, e);
+            }
+        }
+        filename = fileNames.getNameFromId(110);
+        if (!fileExists(existingFiles, filename)){ //If it doesn't exists we copy the file and rename it to the proper name
+            InputStream in;
+            OutputStream out ;
+            try{
+                in = assetManager.open("110");
+                File outFile = new File(APP_DATA_DIRECTORY, filename);
+                out = new FileOutputStream(outFile);
+                copyFile(in, out);
+                in.close();
+                out.flush();
+                out.close();
+                Log.w("song", "Wrote song "+filename);
+            }catch (IOException e){
+                Log.e("tag", "Failed to copy asset file: "+filename, e);
+            }
+        }
+
+        /*CODE BELOW IS FOR AUTOMATICALLY ADDING THE SONG
+        * FILES TO THE MEMORY CARD AND IS CURRENTLY DISABLED*/
+
+        /*File[] existingFiles = filesDir.listFiles();
         String filename;
         //The array existingFiles will have more file than ours, but there's 109
         //of our files in the assets folder and they come first in the array,
@@ -166,7 +212,7 @@ public class MainActivity extends FragmentActivity implements SensorEventListene
                     Log.e("tag", "Failed to copy asset file: "+filename, e);
                 }
             }
-        }
+        }*/
     }
 
     private void copyFile(InputStream in, OutputStream out) throws IOException {
@@ -179,12 +225,21 @@ public class MainActivity extends FragmentActivity implements SensorEventListene
 
     private void  updateSettings(){
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        tune_fork_duration = preferences.getInt("fork_duration", 5);
+        tune_fork_duration = Integer.parseInt(preferences.getString("fork_duration_list", "5"));
         tune_fork_enabled = preferences.getBoolean("fork_enabled", true);
-        tune_fork_hardness = preferences.getInt("fork_hardness", 2000);
+        tune_fork_hardness = Integer.parseInt(preferences.getString("fork_hardness_list", "2000"));
 
-        note_duration = (double)preferences.getInt("note_duration", 7)/10;
-        //Toast.makeText(this, ""+note_duration, Toast.LENGTH_SHORT).show();
+        note_duration = Double.parseDouble(preferences.getString("note_duration_list", "7"))/10;
+        player.setLouderTones(preferences.getBoolean("note_louder_tones", true));
+
+        boolean firststart = preferences.getBoolean("firststart", true);
+        if (firststart){
+            Intent intent = new Intent();
+            intent.setClass(this, GuideActivity.class);
+            startActivityForResult(intent, 0);
+        }
+
+        pdfEnabled = preferences.getBoolean("pdfenabled", true);
 
         if (tabAdapter != null){
             tabAdapter.updateDuration(note_duration);

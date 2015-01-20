@@ -11,42 +11,72 @@
             android:title="Stämgaffel"
             android:defaultValue="true"/>
 
-        <com.lkss.sangboksapp.SeekBarPreference
-            android:key="fork_duration"
+        <ListPreference
+            android:key="fork_duration_list"
             android:title="Tonlängd"
-            android:summary="Ändra hur länge stämgaffeln ska spelas upp i sekunder (standard 5)"
-            android:defaultValue="5"
-            android:max="15"/>
+            android:summary="Längden på stämgaffelns ton"
+            android:entries="@array/forklength"
+            android:entryValues="@array/forklengthsvals"
+            android:defaultValue="5"/>
 
-        <com.lkss.sangboksapp.SeekBarPreference
-            android:key="fork_hardness"
-            android:title="Stämgaffelshårdhet"
-            android:summary="Justera hur mycket kraft som krävs för att aktivera stämgaffeln (standard 2000)"
-            android:defaultValue="2000"
-            android:max="5000"/>
+        <ListPreference
+            android:key="fork_hardness_list"
+            android:title="Känslighet"
+            android:summary="Hur mycket kraft som behövs för att aktivera stämgaffeln"
+            android:entries="@array/forksensitivity"
+            android:entryValues="@array/forksensitivitysvals"
+            android:defaultValue="2000"/>
 
     </PreferenceCategory>
     <PreferenceCategory
         android:title="Starttoner"
         android:key="second_category">
 
-        <com.lkss.sangboksapp.SeekBarPreference
-            android:key="note_duration"
-            android:title="Starttonslängd"
-            android:summary="Ändra hur länge starttonerna ska spelas i tiondels sekunder (standard 7)"
-            android:defaultValue="7"
-            android:max="50"/>
+        <ListPreference
+            android:key="note_duration_list"
+            android:title="Tonlängd"
+            android:summary="Hur länge varje startton spelas upp"
+            android:entries="@array/tonelength"
+            android:entryValues="@array/tonelengthvals"
+            android:defaultValue="7"/>
+
+        <CheckBoxPreference
+            android:key="note_louder_tones"
+            android:title="Högljudda toner"
+            android:summary="Mer högljudda toner (men sämre klang)"
+            android:defaultValue="true"
+            />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="Övrigt"
+        android:key="third_category">
+        <CheckBoxPreference
+            android:title="Använd PDF-filer"
+            android:summary="Lägg filerna i mappen LKSS på minneskortet"
+            android:key="pdfenabled"
+            android:defaultValue="true"/>
+
+        <Preference
+            android:title="Visa överföringsguiden"
+            android:summary="Visa guiden för hur man för över PDF-filerna">
+            <intent
+                android:action="com.lkss.sangboksapp.GuideActivity"/>
+        </Preference>
 
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:title="Om appen"
-        android:key="third_category">
-
-        <EditTextPreference
-            android:summary="Linköpings Studentsångares Stamsånger V1.0\nGrafisk design Philip Ekströmer\nProgrammering Daniel Häggmyr\nENDAST FÖR INTERNT BRUK"
-            android:selectable="false"
-            android:editable="false"/>
-
+        android:title="Om appen">
+        <Preference
+            android:summary="Linköpings Studentsångares stamsånger V1.0.1\nGrafisk design Philip Ekströmer\nProgrammering Daniel Häggmyr"
+            android:key="about"></Preference>
     </PreferenceCategory>
+
+    <CheckBoxPreference
+        android:summary="first start?"
+        android:key="firststart"
+        android:defaultValue="true"/>
+
+
 </PreferenceScreen>

@@ -13,6 +13,7 @@ import android.widget.ImageView;
 public class SoundPlayer {
     public SoundPlayer(){};
     Thread NotesThread;
+    boolean louderTones = true;
 
     public void playNotes(final double[] notes, final double length, final ImageView v, final Activity a){
         //Most of the code in this function is taken from StackOverflow
@@ -40,9 +41,20 @@ public class SoundPlayer {
                         double sample[] = new double[numSamples];
                         byte generatedSnd[] = new byte[2 * numSamples];
 
-
-                        for (int i = 0; i < numSamples; ++i) {      // Fill the sample array
-                            sample[i] = Math.sin(freqOfTone * 2 * Math.PI * i / (sampleRate));
+                        for (int i = 0; i < numSamples; ++i) { // Fill the sample array
+                            if (louderTones) {
+                                double a = Math.sin(freqOfTone * 2 * Math.PI * i / (sampleRate));
+                                if (a > 0)
+                                    sample[i] = 1;
+                                else
+                                    sample[i] = -1;
+                                sample[i] += 5 * Math.sin(freqOfTone * 2 * Math.PI * i / (sampleRate));
+                                sample[i] += 2 * Math.sin(freqOfTone * 4 * Math.PI * i / (sampleRate));
+                                sample[i] += Math.sin(freqOfTone * 8 * Math.PI * i / (sampleRate));
+                                sample[i] = sample[i] / 9;
+                            }else{
+                                sample[i] = Math.sin(freqOfTone * 2 * Math.PI * i / (sampleRate));
+                            }
                         }
 
                         // convert to 16 bit pcm sound array
@@ -120,6 +132,10 @@ public class SoundPlayer {
             });
             NotesThread.start();
         }
+    }
+
+    public void setLouderTones(boolean isEnabled){
+        louderTones = isEnabled;
     }
 
     public void playNote(final double hz, final double length) {

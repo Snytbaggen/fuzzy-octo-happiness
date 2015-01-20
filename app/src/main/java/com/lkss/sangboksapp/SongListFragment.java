@@ -4,9 +4,11 @@ import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.preference.PreferenceManager;
 import android.support.v4.app.ListFragment;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -54,10 +56,15 @@ public class SongListFragment extends ListFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
         View v = inflater.inflate(R.layout.song_list, container, false);
 
-        final SongListAdapter adapter = new SongListAdapter(getActivity(), R.layout.activity_main, songList.getList());
+        SongListAdapter adapter = null;
+
+        if (songList != null)
+            adapter = new SongListAdapter(getActivity(), R.layout.activity_main, songList.getList());
 
         final ListView listView = (ListView) v.findViewById(android.R.id.list);
-        listView.setAdapter(adapter);
+
+        if (adapter != null)
+            listView.setAdapter(adapter);
 
         TextView searchField = (TextView) v.findViewById(R.id.list_search);
         searchField.addTextChangedListener(new TextWatcher() {
@@ -114,8 +121,13 @@ public class SongListFragment extends ListFragment {
 
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
-        final Song song = (Song) l.getItemAtPosition(position);
-        openSongFile(song);
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        if (preferences.getBoolean("pdfenabled", true)) {
+            final Song song = (Song) l.getItemAtPosition(position);
+            openSongFile(song);
+        }else{
+            clickListener(v.findViewById(R.id.list_song_info_icon));
+        }
     }
 
 }
