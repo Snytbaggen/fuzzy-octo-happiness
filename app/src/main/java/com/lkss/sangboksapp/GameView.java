@@ -128,6 +128,10 @@ public class GameView extends SurfaceView {
             playerPos.x = 0;
     }
 
+    public void setPlayerPos(float xpos){
+        playerPos.x = Math.round(xpos) - player.getWidth()/2;
+    }
+
     public void setMoveRight(boolean move){
         isMovingRight = move;
     }

@@ -4,23 +4,12 @@
     android:layout_width="match_parent" android:layout_height="match_parent"
     android:id="@+id/gamelayout">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
         <TextView
-            android:id="@+id/game_left"
+            android:id="@+id/game_touch"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:clickable="true"
+            android:clickable="true"/>
 
-            android:layout_weight="1"/>
-        <TextView
-            android:id="@+id/game_right"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:clickable="true"
-            android:layout_weight="1"/>
-        </LinearLayout>
 
     <TextView
         android:id="@+id/game_text"

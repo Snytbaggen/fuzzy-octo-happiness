@@ -33,22 +33,26 @@ public class GameActivity extends Activity {
         if (layout != null)
             layout.addView(gameView);
 
-        TextView left = (TextView) layout.findViewById(R.id.game_left);
+        TextView left = (TextView) layout.findViewById(R.id.game_touch);
         left.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
-                if (motionEvent.getAction() == MotionEvent.ACTION_DOWN){
+                if (motionEvent.getAction() == MotionEvent.ACTION_MOVE) {
+                    gameView.setPlayerPos(motionEvent.getX());
+                    return true;
+                }
+                /*if (motionEvent.getAction() == MotionEvent.ACTION_DOWN){
                     gameView.setMoveLeft(true);
                     return true;
                 }else if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
                     gameView.setMoveLeft(false);
                     return true;
-                }
+                }*/
                 return false;
             }
         });
 
-        TextView right = (TextView) layout.findViewById(R.id.game_right);
+        /*TextView right = (TextView) layout.findViewById(R.id.game_right);
         right.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
@@ -63,6 +67,6 @@ public class GameActivity extends Activity {
                 }
                 return false;
             }
-        });
+        });*/
     }
 }
